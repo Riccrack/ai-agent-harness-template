@@ -134,34 +134,202 @@ npx degit Riccrack/ai-agent-harness-template/harness-skeleton mi-app/docs
 
 ---
 
-## 🤖 Configurar tu agente AI para leer los docs
+## 🛠️ Instalación por herramienta de IA
 
-### Claude Code
+Cada herramienta tiene su forma de auto-cargar contexto. Acá tenés el setup completo (bootstrap + configuración) para las más comunes:
 
-Crear `CLAUDE.md` en la raíz del proyecto:
-```markdown
-Al inicio de cada sesión, leé `docs/README.md` y los 4 docs prioritarios:
-`active-context.md`, `product-context.md`, `progress.md`, `known-issues.md`.
-```
-
-### Cursor / Cline
-
-Crear `.cursorrules`:
-```
-Read docs/README.md at session start to understand the project structure.
-Key docs to always check: docs/active-context.md, docs/known-issues.md.
-After every productive session, update docs/active-context.md and docs/progress.md.
-```
-
-### Aider
+### 🟣 Claude Code (CLI)
 
 ```bash
-aider --read docs/README.md --read docs/active-context.md --read docs/known-issues.md
+# 1. Bootstrap del harness en tu proyecto
+cd mi-app
+npx degit Riccrack/ai-agent-harness-template ~/.ai-harness
+~/.ai-harness/init-harness.sh
+
+# 2. Crear CLAUDE.md en la raíz (Claude Code lo lee automáticamente)
+cat > CLAUDE.md << 'EOF'
+# AI Agent Context
+
+Este proyecto usa el AI Agent Harness Template. Al inicio de cada sesión:
+
+1. Lee `docs/README.md` para entender la estructura
+2. Lee estos 4 docs prioritarios (te dan 80% del contexto):
+   - `docs/active-context.md` — qué pasó la última sesión
+   - `docs/product-context.md` — qué es el proyecto
+   - `docs/progress.md` — qué funciona ya
+   - `docs/known-issues.md` — qué bugs evitar
+3. Según la tarea, lee también: `tech-context.md`, `system-patterns.md`, `decisions.md`
+4. En emergencias: `runbook.md`, `integrations.md`, `security.md`
+
+## Reglas de mantenimiento de docs
+
+- Al final de cada sesión productiva: update `active-context.md` + `progress.md`
+- Bug nuevo → entrada en `known-issues.md`
+- Bug repetido 2+ veces → lección en `lessons-learned.md`
+- Decisión arquitectónica → nuevo ADR en `decisions.md`
+EOF
+
+# 3. Lanzar Claude Code en el proyecto
+claude
 ```
 
-### Antigravity
+### 🔵 Claude Code — extensión de VS Code
 
-Configurá tu agent context para auto-cargar `docs/` al iniciar.
+1. Instalar la extensión: `Cmd/Ctrl+Shift+X` → buscar **"Claude Code"** (de Anthropic) → Install
+2. Bootstrap del harness igual que arriba (`npx degit ...` + `init-harness.sh`)
+3. Crear `CLAUDE.md` igual que arriba (la extensión usa el mismo archivo)
+4. Abrir el panel de Claude Code (`Cmd/Ctrl+Shift+P` → "Claude Code: Focus")
+5. Listo — la extensión lee `CLAUDE.md` automáticamente al iniciar sesión
+
+**Tip**: configurá `"claude-code.autoApprove": ["Read", "Grep", "Glob"]` en `settings.json` para que el agente pueda leer los docs del harness sin pedir permiso cada vez.
+
+### 🖥️ Claude Code Desktop (app Mac/Windows)
+
+1. Descargar de [claude.ai/download](https://claude.ai/download)
+2. Abrir la app y conectar tu proyecto (`File → Open Folder`)
+3. Bootstrap del harness igual que arriba
+4. Crear `CLAUDE.md` igual que arriba
+5. La app levanta el contexto automáticamente
+
+**Bonus**: la app desktop tiene **slash commands** — podés crear `.claude/commands/refresh-context.md` con:
+```markdown
+Releé docs/active-context.md, docs/known-issues.md y docs/progress.md.
+Resumime el estado actual del proyecto en 5 bullets.
+```
+Después corrés `/refresh-context` cuando arrancás una sesión.
+
+### 🌌 Antigravity
+
+1. Bootstrap del harness igual que arriba
+2. Crear `agent.md` en la raíz del proyecto (Antigravity lo auto-carga):
+```markdown
+# Agent Context
+
+Project uses AI Agent Harness Template. At session start, read:
+- docs/README.md (structure)
+- docs/active-context.md (latest session)
+- docs/product-context.md (what this project is)
+- docs/known-issues.md (bugs to avoid)
+
+Update docs/active-context.md and docs/progress.md after every productive session.
+```
+3. Si Antigravity tiene memoria persistente, configurá:
+```
+@memory remember: this project uses AI Agent Harness — always read docs/ at session start
+```
+
+### 🟠 Cline (VS Code extension)
+
+Cline soporta el patrón "Memory Bank" nativamente — el harness es 100% compatible.
+
+1. Instalar Cline desde VS Code Marketplace
+2. Bootstrap del harness:
+```bash
+cd mi-app
+npx degit Riccrack/ai-agent-harness-template ~/.ai-harness
+~/.ai-harness/init-harness.sh
+```
+3. Crear `.clinerules` en la raíz:
+```
+# Cline rules — AI Agent Harness
+
+At session start, read in order:
+1. docs/README.md
+2. docs/active-context.md
+3. docs/product-context.md
+4. docs/known-issues.md
+
+This project follows the AI Agent Harness pattern (extension of Cline's
+Memory Bank). The 13 docs in docs/ are the source of truth for context.
+
+After each productive session:
+- Update docs/active-context.md (new entry at top)
+- Update docs/progress.md (if features changed)
+- Update docs/known-issues.md (if bugs appeared)
+```
+4. En la barra lateral de Cline, click el ícono **Memory Bank** → apuntalo a `docs/`
+
+### 🎯 Cursor
+
+1. Bootstrap del harness igual que arriba
+2. Crear `.cursorrules` en la raíz:
+```
+Project uses AI Agent Harness Template (13 docs in docs/).
+
+At session start, ALWAYS read:
+- docs/README.md (harness structure)
+- docs/active-context.md (latest work)
+- docs/product-context.md (what this is)
+- docs/known-issues.md (bugs to avoid)
+
+When the task involves: architecture → also read docs/decisions.md and
+docs/system-patterns.md. When debugging → also read docs/lessons-learned.md.
+When deploying or troubleshooting → also read docs/runbook.md.
+
+After productive sessions, update docs/active-context.md and docs/progress.md.
+```
+3. Reload Cursor — las reglas se aplican automáticamente
+
+**Alternativa moderna**: si tu Cursor soporta `.cursor/rules/*.mdc`, podés crear `.cursor/rules/harness.mdc` con el mismo contenido + frontmatter `alwaysApply: true`.
+
+### 🟢 Aider
+
+```bash
+# 1. Bootstrap
+npx degit Riccrack/ai-agent-harness-template ~/.ai-harness
+~/.ai-harness/init-harness.sh
+
+# 2. Crear alias para auto-cargar los docs prioritarios
+alias aider-harness='aider \
+  --read docs/README.md \
+  --read docs/active-context.md \
+  --read docs/product-context.md \
+  --read docs/known-issues.md \
+  --read docs/progress.md'
+
+# 3. Usar
+aider-harness
+```
+
+O configurar en `.aider.conf.yml`:
+```yaml
+read:
+  - docs/README.md
+  - docs/active-context.md
+  - docs/product-context.md
+  - docs/known-issues.md
+  - docs/progress.md
+```
+
+### 🤖 Continue.dev (VS Code / JetBrains)
+
+1. Instalar Continue
+2. Bootstrap del harness igual que arriba
+3. En `.continue/config.json`, agregar context provider:
+```json
+{
+  "contextProviders": [
+    {
+      "name": "folder",
+      "params": { "folders": ["docs"] }
+    }
+  ]
+}
+```
+4. Usar `@docs` en el chat para que Continue cargue todo el harness como contexto
+
+### 📦 Tabla comparativa de archivos de configuración
+
+| Herramienta | Archivo de config | Auto-load |
+|---|---|---|
+| Claude Code (CLI) | `CLAUDE.md` | ✅ |
+| Claude Code (VS Code ext) | `CLAUDE.md` | ✅ |
+| Claude Code (Desktop) | `CLAUDE.md` + `.claude/commands/` | ✅ |
+| Antigravity | `agent.md` | ✅ |
+| Cline | `.clinerules` | ✅ |
+| Cursor | `.cursorrules` o `.cursor/rules/*.mdc` | ✅ |
+| Aider | `.aider.conf.yml` o flags `--read` | ⚠️ flag manual |
+| Continue.dev | `.continue/config.json` + `@docs` | ⚠️ trigger manual |
 
 ---
 
