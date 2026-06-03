@@ -167,7 +167,7 @@ Configurá tu agent context para auto-cargar `docs/` al iniciar.
 
 ## 🎁 Ejemplo en producción
 
-[Publiafy](https://github.com/Riccrack/Publiafy/tree/main/docs) usa este harness con los 13 docs llenos. Buen referente para ver cómo queda un proyecto real con ~250KB de docs vivos.
+[Publiafy](https://publiafy.com) (SaaS multi-tenant de gestión social media + IA generativa) usa este harness con los 13 docs llenos, ~250KB de docs vivos. El código es privado, pero la app es el caso de prueba real del harness.
 
 ---
 
@@ -195,6 +195,6 @@ MIT — usá esto en cualquier proyecto, comercial o no.
 
 **Si te sirvió, dale ⭐ al repo.**
 
-Hecho con ❤️ desde Buenos Aires.
+Hecho con ❤️ desde México.
 
 </div>
