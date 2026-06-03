@@ -546,6 +546,6 @@ MIT — usalo donde quieras, comercial o no, sin pedir permiso.
 
 **Si te sirvió, dale ⭐ al repo arriba a la derecha.**
 
-Hecho con ❤️ desde México.
+Hecho con ❤️ por [empareja2digitales](https://www.youtube.com/@empareja2digitales).
 
 </div>
