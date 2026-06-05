@@ -18,6 +18,25 @@
 - 🐳 **Configs Docker generados** out-of-the-box para el camino VPS (docker-stack.yml, Traefik, backup scripts)
 - 🤖 **Auto-creación** del archivo de config de tu agente AI (CLAUDE.md / .cursorrules / .clinerules / etc.)
 - 📚 **4 docs nuevos** para path comercial: `infrastructure.md`, `disaster-recovery.md`, `monitoring.md`, `costs.md`
+- 🔌 **Plugins ecosystem**: el wizard recomienda los top plugins de Claude Code (Superpowers 219k⭐, Frontend Design oficial Anthropic, UI/UX Pro Max 87.8k⭐, claude-mem) y genera `install-plugins.sh` listo para correr
+
+---
+
+## 🤝 Combiná con Superpowers — el combo killer
+
+Este harness es **complementario** a [Superpowers](https://github.com/obra/superpowers) (219k⭐ MIT, plugin oficial #2 más instalado de Claude Code):
+
+| Dimensión | **Superpowers** | **AI Agent Harness** (este repo) |
+|---|---|---|
+| Qué controla | **CÓMO** Claude codea (TDD, spec-driven, YAGNI) | **QUÉ** Claude sabe de tu proyecto |
+| Tipo | Skills framework + metodología | Estructura de docs |
+| Tamaño | Plugin pesado con skills + comandos + agentes | 8-17 archivos .md por proyecto |
+| Reusabilidad | Igual en todos tus proyectos | Único por proyecto |
+| Install | `/plugin install superpowers@claude-plugins-official` | `npx degit ... && ./init-harness.sh` |
+
+**Usá ambos**: Superpowers le da a Claude la disciplina + el harness le da el contexto de tu proyecto específico. Resultado: Claude trabaja con TDD sobre tu codebase, sabiendo el por qué de cada decisión.
+
+El wizard de v2 ya te ofrece instalar Superpowers + Frontend Design + UI/UX Pro Max + claude-mem en un solo paso.
 
 ---
 

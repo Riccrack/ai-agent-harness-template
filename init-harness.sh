@@ -330,6 +330,15 @@ ask_choice P10 "¿En qué país opera principalmente tu app?" \
   "Argentina" "México" "España" "Colombia" "Chile" \
   "Otro LATAM" "USA/Canada" "Europa (no España)" "Global / múltiples"
 
+# P9.5 — Plugins/skills recomendados para Claude Code (skip si no usa Claude Code)
+if [[ "${A[P9]:-1}" == "1" || "${A[P9]:-1}" == "2" ]]; then
+  ask_choice P9P "🔌 ¿Querés sugerencias de plugins para tu Claude Code? (battle-tested 2026)" \
+    "⭐ Top 3 esenciales (Superpowers + Frontend Design + Context7)" \
+    "⭐⭐ Full vibecoding (top 3 + UI/UX Pro Max + claude-mem session memory)" \
+    "Solo info en CLAUDE.md (los instalo después)" \
+    "No, gracias"
+fi
+
 # ═══════════════════════════════════════════════════════════════════
 #  ETAPA 4 — STACK + STARTER
 # ═══════════════════════════════════════════════════════════════════
@@ -880,6 +889,24 @@ EOF
 - Si encontrás un bug → agregá entrada en \`known-issues.md\`
 - Si un bug se repite 2da vez → lección en \`lessons-learned.md\`
 - Si tomamos una decisión arquitectónica → nuevo ADR en \`decisions.md\`
+
+## 🔌 Plugins recomendados (correr 1 sola vez en Claude Code)
+
+\`\`\`
+/plugin install superpowers@claude-plugins-official
+/plugin install frontend-design@claude-plugins-official
+/reload-plugins
+\`\`\`
+
+| Plugin | Stars | Qué hace |
+|---|---|---|
+| **Superpowers** (obra/superpowers) | 219k⭐ MIT | Skills framework + metodología TDD + spec-driven coding |
+| **Frontend Design** (Anthropic oficial) | — | UI con dirección estética coherente (brutalist/maximalist/etc.) |
+| **Context7** (upstash) | — | Docs de libs siempre actualizadas |
+| **UI/UX Pro Max** | 87.8k⭐ MIT | Design system generator — install: \`npm i -g uipro-cli && uipro init --ai claude\` |
+| **claude-mem** | — | Persistencia de contexto entre sesiones (complementa este harness) |
+
+Más recursos: https://github.com/hesreallyhim/awesome-claude-code (45.8k⭐)
 EOF
     fi
     echo "${DIM}✓ Creado $AGENT_FILE con instrucciones para tu agente${RESET}"
@@ -887,6 +914,70 @@ EOF
     touch "$(pwd)/$AGENT_FILE"
     echo "${DIM}✓ Creado $AGENT_FILE vacío${RESET}"
   fi
+fi
+
+# ─── Generar install-plugins.sh si el user pidió plugins ────────
+if [[ "${A[P9P]:-3}" == "1" || "${A[P9P]:-3}" == "2" ]]; then
+  cat > "$(pwd)/install-plugins.sh" << 'SCRIPT_EOF'
+#!/usr/bin/env bash
+# install-plugins.sh — Plugins recomendados para Claude Code
+#
+# Ejecutar UNA sola vez después de instalar Claude Code.
+# Algunos requieren slash commands DENTRO de Claude Code (no en bash).
+
+set -e
+
+cat <<INSTRUCTIONS
+🔌 Instalación de plugins recomendados
+
+PARTE 1 — UI/UX Pro Max (vía npm, corre AHORA):
+INSTRUCTIONS
+
+# UI/UX Pro Max (npm-based)
+npm install -g uipro-cli 2>/dev/null || sudo npm install -g uipro-cli
+uipro init --ai claude
+
+cat <<INSTRUCTIONS
+
+✅ UI/UX Pro Max instalado.
+
+PARTE 2 — Plugins en Claude Code (slash commands):
+
+Abrí Claude Code (claude en terminal) y pegá ESTOS comandos uno por uno:
+
+  /plugin install superpowers@claude-plugins-official
+  /plugin install frontend-design@claude-plugins-official
+  /plugin install context7@upstash
+INSTRUCTIONS
+
+SCRIPT_EOF
+  # Si eligió "full vibecoding", agregar más
+  if [[ "${A[P9P]}" == "2" ]]; then
+    cat >> "$(pwd)/install-plugins.sh" << 'SCRIPT_EOF'
+
+cat <<INSTRUCTIONS
+
+PARTE 3 — Full vibecoding (session continuity):
+
+  /plugin install claude-mem
+INSTRUCTIONS
+
+SCRIPT_EOF
+  fi
+
+  cat >> "$(pwd)/install-plugins.sh" << 'SCRIPT_EOF'
+
+cat <<INSTRUCTIONS
+
+PARTE 4 — Recargar:
+
+  /reload-plugins
+
+✅ Listo. Más recursos: https://github.com/hesreallyhim/awesome-claude-code
+INSTRUCTIONS
+SCRIPT_EOF
+  chmod +x "$(pwd)/install-plugins.sh"
+  echo "${DIM}✓ Creado install-plugins.sh (correlo cuando configures Claude Code)${RESET}"
 fi
 
 # ─── Git init ────────────────────────────────────────────────────
