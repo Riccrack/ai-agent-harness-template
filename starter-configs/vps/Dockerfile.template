@@ -1,0 +1,50 @@
+# Dockerfile — Multi-stage build para {{PROJECT_NAME}}
+#
+# ¿Qué es multi-stage?
+#   - "Build stage": instala todas las deps + compila el código
+#   - "Run stage": copia SOLO lo necesario para correr, sin deps de build
+#   - Resultado: imagen final mucho más chica + más segura
+
+# ─── Stage 1: Build ─────────────────────────────────────
+FROM node:20-alpine AS build
+
+WORKDIR /app
+
+# Copiar solo package files primero (mejor cache de capas Docker)
+COPY package*.json ./
+
+# Install todas las deps (incluyendo dev)
+RUN npm ci
+
+# Copiar el resto del código
+COPY . .
+
+# Build de producción
+RUN npm run build
+
+# ─── Stage 2: Run ───────────────────────────────────────
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Healthcheck necesita wget (alpine no lo trae por default — usa busybox)
+# Si tu app expone /api/health, esto reinicia el container si falla 3 veces
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=40s \
+  CMD wget -q -O - http://localhost:3000/api/health || exit 1
+
+# Copiar solo lo necesario del build stage
+COPY --from=build /app/package*.json ./
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules ./node_modules
+
+# Si servís archivos estáticos (frontend), copiar también
+# COPY --from=build /app/public ./public
+
+# Seguridad: NO correr como root
+USER node
+
+# Puerto que expone tu app
+EXPOSE 3000
+
+# Comando para arrancar
+CMD ["node", "dist/server.js"]

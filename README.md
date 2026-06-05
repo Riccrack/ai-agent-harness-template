@@ -3,9 +3,21 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Use this template](https://img.shields.io/badge/Use%20this-template-2ea44f?logo=github)](https://github.com/Riccrack/ai-agent-harness-template/generate)
 [![Made for AI agents](https://img.shields.io/badge/built%20for-AI%20agents-blueviolet)](#)
-[![Docs: 13 files](https://img.shields.io/badge/docs-13%20files-informational)](#-qué-vas-a-tener-al-terminar)
+[![Docs: 8-17 files](https://img.shields.io/badge/docs-8--17%20files-informational)](#-qué-vas-a-tener-al-terminar)
+[![Paths: 3](https://img.shields.io/badge/paths-Local%20%7C%20Vercel%20%7C%20VPS-orange)](#-los-3-caminos-elegí-el-que-encaje)
 
-> **13 archivos de documentación que convierten cualquier proyecto en uno fácil de entender para agentes de IA.**
+> **Wizard interactivo que prepara tu proyecto para programar con IA — 3 caminos según si vas a vender o no.**
+
+---
+
+## 🆕 Novedades v2 (2026-06-05)
+
+- 🌳 **3 caminos** según tu objetivo: Local-only / Vercel managed / VPS Contabo comercial
+- 💰 **Budget tiers** explícitos en el camino VPS ($5 → $48/mes)
+- ⚠️ **Warning automático** si elegís Vercel pero vas a vender (avisa que escala caro)
+- 🐳 **Configs Docker generados** out-of-the-box para el camino VPS (docker-stack.yml, Traefik, backup scripts)
+- 🤖 **Auto-creación** del archivo de config de tu agente AI (CLAUDE.md / .cursorrules / .clinerules / etc.)
+- 📚 **4 docs nuevos** para path comercial: `infrastructure.md`, `disaster-recovery.md`, `monitoring.md`, `costs.md`
 
 ---
 
@@ -41,6 +53,38 @@ No, si...
 
 - ❌ Solo querés un script de 50 líneas
 - ❌ El proyecto es desechable / experimento de 1 día
+
+---
+
+## 🌳 Los 3 caminos — elegí el que encaje
+
+El wizard te pregunta primero **¿vas a vender esto?** y bifurca:
+
+| Camino | Costo arranque | Costo crecimiento | Ideal para |
+|---|---|---|---|
+| 💻 **Local-only** | $0 | $0 (con limitaciones) | Aprender, dev tools, scripts personales |
+| 🌐 **Vercel/Cloud** | $0 free tier | $70-300/mes apenas crece | Personal, portfolio, MVPs |
+| 🚀 **VPS Contabo** | **$5/mes** (Cloud VPS 10) | $15 → $48 → $69+ según escalá | Comercial, vendible long-term |
+
+### 💻 Camino Local
+
+Tu app vive en tu computadora. SQLite en archivo local, sin reverse proxy, sin SSL.
+Para compartir con alguien: ngrok / Tailscale / Cloudflare Tunnel.
+
+### 🌐 Camino Vercel
+
+`git push` y tu app está online en 30 segundos. Free tier generoso para arrancar pero **escala caro** cuando crecés (Vercel + Supabase + Clerk = ~$70/mes a los primeros 100 usuarios pagos).
+
+### 🚀 Camino VPS Contabo (patrón Publiafy)
+
+Self-hosted en VPS propio. Postgres + Redis + Traefik + tu app en Docker Swarm.
+**Costo fijo predecible** desde $5/mes hasta $48-89/mes según escalá. Cero vendor lock-in.
+
+Tiers de upgrade documentados (cuándo upgradear sólo cuando las métricas lo justifican):
+- **Cloud VPS 10** ($5-7/mes) — arranque, 0-200 usuarios
+- **Cloud VPS 20** ($7-9/mes) — validación, 200-800 usuarios
+- **Cloud VPS 30** ($15-20/mes) — crecimiento, 800-2000 usuarios
+- **VDS M** ($48/mes) — performance dedicada, 2000+ usuarios
 
 ---
 
