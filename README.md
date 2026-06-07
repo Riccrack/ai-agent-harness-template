@@ -10,12 +10,39 @@
 
 ---
 
-## 🆕 Novedades v3 (2026-06-06) — **PLUGIN DE CLAUDE CODE**
+## 🚀 QUICK START — pegá este prompt en tu chat (Claude Code / Cursor / Cline / Antigravity / cualquier agente AI)
 
-- ✨ **NUEVO**: el harness ahora es un **plugin nativo de Claude Code** — usalo directamente en el chat sin abrir terminal
-- 🎯 **Slash commands**: `/harness-init` (wizard) + `/harness-upgrade` (migrar entre paths)
-- 💬 **Cero terminal para principiantes**: Claude te hace las preguntas EN EL CHAT y genera todo solo
-- 🌐 **Cross-agent**: funciona en Claude Code, Cursor, Cline, Antigravity, Continue.dev, Aider
+**Paso único.** Abrí el chat de tu agente AI en la carpeta de tu proyecto nuevo y pegá esto:
+
+```
+Ejecutá el wizard del AI Agent Harness para preparar este proyecto.
+
+Fetchá las instrucciones desde:
+https://raw.githubusercontent.com/Riccrack/ai-agent-harness-template/main/START.md
+
+Seguí TODAS las instrucciones de ese archivo. Hacé las preguntas en el chat,
+una a una, esperando mi respuesta entre cada una.
+```
+
+✅ El agente fetchea las instrucciones del repo, te hace 18 preguntas conversacionalmente, y al final genera **todo** (docs/, CLAUDE.md, configs Docker si elegís VPS, git init, etc.).
+
+✅ **Cero terminal**. **Cero plugin install**. **Cero comandos npx/bash**. Todo desde el chat.
+
+✅ **Funciona en CUALQUIER agente AI** con WebFetch: Claude Code (CLI/VS Code/Desktop), Cursor, Cline, Antigravity, Continue.dev, Aider, etc.
+
+> 💡 **Modos opcionales** — agregá una línea al final del prompt:
+> - `Usá modo quick.` → solo 5 preguntas esenciales (~2 min)
+> - `Usá modo deep.` → 18 + 8 edge cases (~20 min)
+> - sin nada → modo estándar (18 preguntas, ~8 min)
+
+---
+
+## 🆕 Novedades v3.1 (2026-06-06) — **BOOTSTRAP UNIVERSAL VIA URL**
+
+- ✨ **NUEVO**: `START.md` como entry point — pegás 1 prompt en el chat y arranca, sin plugin install
+- 🌐 **Funciona en TODOS los agentes** (no solo Claude Code) — Cursor, Cline, Antigravity, Continue, Aider
+- 🎯 También plugin nativo de Claude Code con `/harness-init` + `/harness-upgrade` (si tu env lo soporta)
+- 💬 **Cero terminal para principiantes**: el agente te hace las preguntas EN EL CHAT y genera todo solo
 - 🐳 Todo lo de v2.1: 3 paths (Local/Vercel/VPS), 8-17 docs, Docker configs, plugin ecosystem
 
 ---
