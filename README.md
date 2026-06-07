@@ -107,63 +107,62 @@ Tiers de upgrade documentados (cuándo upgradear sólo cuando las métricas lo j
 
 ---
 
-## 🚀 Cómo instalar y usar — 3 opciones (la 1 es la más fácil)
+## 🚀 Cómo instalar y usar — 4 opciones (la 1 es la más fácil)
 
-### ⭐ Opción 1 — Plugin de Claude Code (RECOMENDADO para principiantes — SIN terminal)
+### ⭐ Opción 1 — Pegá UN prompt en el chat de tu agente (más fácil, funciona en TODOS los agentes)
 
-**Pre-requisito**: tener [Claude Code](https://claude.com/download) instalado (CLI, VS Code extension o app Desktop).
+**No requiere**: terminal, plugin install, descarga manual. **Solo pegás un prompt** en el chat de Claude Code / Cursor / Cline / Antigravity / Continue.
 
-**Paso 1** — En el chat de Claude Code, pegá estos 3 comandos:
+**Paso único** — Abrí el chat de tu agente en la carpeta de tu proyecto nuevo y pegá:
+
+```
+Ejecutá el wizard del AI Agent Harness para preparar este proyecto.
+
+Fetchá las instrucciones desde:
+https://raw.githubusercontent.com/Riccrack/ai-agent-harness-template/main/START.md
+
+Seguí TODAS las instrucciones de ese archivo. Hacé las preguntas en el chat,
+una a una, esperando mi respuesta entre cada una.
+```
+
+¡Eso es todo! El agente lee el archivo, te hace 18 preguntas conversacionales, y al final genera toda la estructura.
+
+> 💡 **Modos disponibles** — agregá al prompt:
+> - `Usá modo quick` → solo 5 preguntas esenciales (~2 min)
+> - `Usá modo standard` → 18 preguntas (~8 min, default)
+> - `Usá modo deep` → 18 + 8 edge cases (~20 min)
+
+> 🌐 **Funciona en**: Claude Code (CLI, VS Code, Desktop), Cursor, Cline, Antigravity, Continue.dev, Aider — cualquier agente que pueda hacer WebFetch.
+
+### ⭐ Opción 2 — Plugin nativo de Claude Code (si tu Claude Code soporta `/plugin`)
+
+Si tu versión de Claude Code soporta slash commands de plugins, podés instalarlo formalmente:
+
 ```
 /plugin marketplace add Riccrack/ai-agent-harness-template
 /plugin install harness@ai-agent-harness-template
 /reload-plugins
 ```
 
-**Paso 2** — En el chat de Claude Code, escribí:
-```
-/harness-init
-```
+Después invocás con `/harness-init` o `/harness-upgrade to=vps`.
 
-**Paso 3** — Claude te va a hacer 18 preguntas conversacionales en el chat. Respondé en lenguaje natural. Al final genera todo automáticamente.
+> ⚠️ **Si te aparece** `/plugin isn't available in this environment` → usá la Opción 1 (funciona igual).
 
-¡Eso es todo! Sin terminal, sin npx, sin bash. Todo desde la interfaz del chat.
-
-> 💡 **Modos disponibles**:
-> - `/harness-init` → estándar (18 preguntas, ~8 min)
-> - `/harness-init quick` → solo 5 esenciales (~2 min)
-> - `/harness-init deep` → 18 + edge cases (~20 min)
-> - `/harness-upgrade to=vps` → migrar de path después
-
-### 🌐 Para otros agentes (Cursor, Cline, Antigravity, Continue.dev)
-
-Ver [`plugins/harness/README.md`](./plugins/harness/README.md) sección "Cross-agent setup" — el plugin funciona en todos los agentes con un setup mínimo en cada uno.
-
-### 🛠️ Opción 2 — Wizard bash (para devs que prefieren terminal)
-
-Si preferís terminal:
+### 🛠️ Opción 3 — Wizard bash (para devs que prefieren terminal)
 
 ```bash
 # Pre-requisitos: Git + Node.js
-node --version    # debe decir v18+
-git --version
-
-# Descargar wizard
 npx degit Riccrack/ai-agent-harness-template ~/.ai-harness
-
-# En la carpeta de tu proyecto
 bash ~/.ai-harness/init-harness.sh
 ```
 
-El wizard bash es 100% funcional y mantenido — solo requiere comodidad con terminal.
-
-### ✋ Opción 3 — Solo descargar los archivos (sin wizard)
+### ✋ Opción 4 — Solo descargar los archivos (sin wizard)
 
 ```bash
 npx degit Riccrack/ai-agent-harness-template/harness-skeleton mi-app/docs
 ```
 
-Eso te deja los 13 archivos `.md` base en `mi-app/docs/` con placeholders `{{PROJECT_NAME}}`, `{{YYYY-MM-DD}}`, `{{OWNER}}` para que reemplaces a mano.
+Te deja los 13 archivos base con placeholders para reemplazar a mano.
 
 ---
 
