@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json.schemastore.org/claude-plugin.json",
+  "name": "harness",
+  "displayName": "AI Agent Harness",
+  "version": "1.0.0",
+  "description": "Wizard interactivo que te hace 18 preguntas en el chat y prepara los docs (8-17 archivos .md) que tu agente AI necesita para entender tu proyecto. Sin abrir terminal.",
+  "author": {
+    "name": "Riccrack",
+    "url": "https://github.com/Riccrack",
+    "email": "rsa300391@gmail.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/Riccrack/ai-agent-harness-template",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Riccrack/ai-agent-harness-template"
+  },
+  "keywords": [
+    "vibecoding",
+    "memory-bank",
+    "agent-context",
+    "scaffolding",
+    "wizard",
+    "interactive",
+    "non-technical-friendly",
+    "no-terminal"
+  ],
+  "commands": [
+    "commands/harness-init.md",
+    "commands/harness-upgrade.md"
+  ],
+  "skills": [
+    "skills/harness-init"
+  ]
+}

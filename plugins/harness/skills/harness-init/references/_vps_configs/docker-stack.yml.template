@@ -1,0 +1,206 @@
+# docker-stack.yml — Stack de Docker Swarm para {{PROJECT_NAME}}
+#
+# Usage:
+#   docker stack deploy -c docker-stack.yml {{stack-name}}
+#
+# Pre-requisitos en el VPS:
+#   - Docker instalado + Swarm inicializado (docker swarm init)
+#   - Red overlay creada: docker network create -d overlay --attachable {{NETWORK_NAME}}
+#   - Volúmenes serán creados automáticamente
+#   - Secrets de Docker Swarm cargados (ver setup-secrets.sh)
+#
+# Servicios incluidos (descomentar según necesites):
+#   ✓ app          — backend + frontend (siempre activo)
+#   ✓ postgres     — DB principal
+#   ✓ redis        — cache + queues
+#   ✓ traefik      — reverse proxy + auto-SSL
+#   ✗ qdrant       — vector DB para RAG (descomentar si usás IA con búsqueda semántica)
+#   ✗ n8n          — workflow automation
+#   ✗ pgadmin      — UI para Postgres (SOLO dev, NO producción)
+
+version: '3.8'
+
+services:
+
+  # ─── App principal ──────────────────────────────────────
+  app:
+    image: {{PROJECT_NAME}}:latest
+    networks:
+      - {{NETWORK_NAME}}
+    secrets:
+      - jwt_secret
+      - database_url
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL_FILE: /run/secrets/database_url
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first      # ← evita downtime en updates
+        failure_action: rollback
+      labels:
+        # Traefik routing
+        - "traefik.enable=true"
+        - "traefik.docker.network={{NETWORK_NAME}}"
+        - "traefik.http.routers.app.rule=Host(`{{DOMAIN}}`)"
+        - "traefik.http.routers.app.entrypoints=websecure"
+        - "traefik.http.routers.app.tls.certresolver=le"
+        - "traefik.http.services.app.loadbalancer.server.port=3000"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ─── PostgreSQL ─────────────────────────────────────────
+  postgres:
+    image: postgres:16
+    networks:
+      - {{NETWORK_NAME}}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    secrets:
+      - postgres_password
+    environment:
+      POSTGRES_USER: {{DB_USER}}
+      POSTGRES_DB: {{DB_NAME}}
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager    # DB siempre en el mismo nodo
+    # NO ports — solo accesible desde red Docker interna (seguridad)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U {{DB_USER}}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Redis (cache + queues) ─────────────────────────────
+  redis:
+    image: redis:7-alpine
+    networks:
+      - {{NETWORK_NAME}}
+    volumes:
+      - redis_data:/data
+    secrets:
+      - redis_password
+    command: ["sh", "-c", "redis-server --requirepass $$(cat /run/secrets/redis_password) --appendonly yes"]
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  # ─── Traefik (reverse proxy + auto-SSL) ─────────────────
+  traefik:
+    image: traefik:v3.4
+    networks:
+      - {{NETWORK_NAME}}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_certs:/letsencrypt
+    command:
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.swarmMode=true"
+      - "--providers.docker.exposedByDefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.le.acme.email={{OWNER_EMAIL}}"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        # Dashboard accesible (proteger con auth en producción real)
+        - "traefik.http.routers.dashboard.rule=Host(`traefik.{{DOMAIN}}`)"
+        - "traefik.http.routers.dashboard.service=api@internal"
+        - "traefik.http.routers.dashboard.tls.certresolver=le"
+        - "traefik.http.routers.dashboard.middlewares=dashboard-auth"
+        # Basic auth: generar con `htpasswd -nb admin yourpassword`
+        # - "traefik.http.middlewares.dashboard-auth.basicauth.users=admin:$$apr1$$..."
+
+  # ─── Qdrant (Vector DB para RAG) — descomentar si usás ──
+  # qdrant:
+  #   image: qdrant/qdrant:latest
+  #   networks: [{{NETWORK_NAME}}]
+  #   volumes:
+  #     - qdrant_data:/qdrant/storage
+  #   deploy:
+  #     replicas: 1
+  #     restart_policy:
+  #       condition: on-failure
+
+  # ─── n8n (workflow automation) — opcional ──────────────
+  # n8n:
+  #   image: n8nio/n8n:latest
+  #   networks: [{{NETWORK_NAME}}]
+  #   volumes:
+  #     - n8n_data:/home/node/.n8n
+  #   environment:
+  #     N8N_HOST: n8n.{{DOMAIN}}
+  #     N8N_PROTOCOL: https
+  #     WEBHOOK_URL: https://n8n.{{DOMAIN}}/
+  #   deploy:
+  #     labels:
+  #       - "traefik.enable=true"
+  #       - "traefik.http.routers.n8n.rule=Host(`n8n.{{DOMAIN}}`)"
+  #       - "traefik.http.routers.n8n.tls.certresolver=le"
+  #       - "traefik.http.services.n8n.loadbalancer.server.port=5678"
+
+  # ─── pgAdmin (SOLO dev — NO producción) ────────────────
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   networks: [{{NETWORK_NAME}}]
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: {{OWNER_EMAIL}}
+  #     PGADMIN_DEFAULT_PASSWORD: changeme   # SOLO dev
+
+# ─── Volúmenes persistentes ─────────────────────────────
+volumes:
+  postgres_data:
+  redis_data:
+  traefik_certs:
+  # qdrant_data:
+  # n8n_data:
+
+# ─── Networks ───────────────────────────────────────────
+networks:
+  {{NETWORK_NAME}}:
+    external: true   # Pre-creada con: docker network create -d overlay --attachable {{NETWORK_NAME}}
+
+# ─── Secrets (Docker Swarm secrets) ─────────────────────
+# Cargar antes de deploy:
+#   echo "tu-secret-aqui" | docker secret create postgres_password -
+#   echo "otro-secret" | docker secret create jwt_secret -
+#   echo "redis-pwd" | docker secret create redis_password -
+#   printf "postgres://%s:%s@postgres:5432/%s" "{{DB_USER}}" "$DB_PWD" "{{DB_NAME}}" | docker secret create database_url -
+secrets:
+  postgres_password:
+    external: true
+  redis_password:
+    external: true
+  jwt_secret:
+    external: true
+  database_url:
+    external: true

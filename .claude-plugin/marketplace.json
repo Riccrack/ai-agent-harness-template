@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json.schemastore.org/claude-plugin-marketplace.json",
+  "name": "ai-agent-harness-template",
+  "displayName": "AI Agent Harness",
+  "description": "Plugin marketplace de Riccrack — herramientas para preparar proyectos para vibecoding con agentes de IA.",
+  "owner": {
+    "name": "Riccrack",
+    "url": "https://github.com/Riccrack"
+  },
+  "homepage": "https://github.com/Riccrack/ai-agent-harness-template",
+  "plugins": [
+    {
+      "name": "harness",
+      "source": "./plugins/harness",
+      "description": "Bootstrap interactivo del AI Agent Harness — Claude te hace preguntas en el chat y genera la estructura de docs para tu proyecto. Cero terminal, cero bash, todo desde la conversación.",
+      "version": "1.0.0",
+      "categories": ["productivity", "scaffolding", "context-management"],
+      "tags": ["vibecoding", "harness", "memory-bank", "non-technical-friendly", "wizard"]
+    }
+  ]
+}

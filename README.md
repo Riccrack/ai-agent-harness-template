@@ -10,15 +10,15 @@
 
 ---
 
-## 🆕 Novedades v2 (2026-06-05)
+## 🆕 Novedades v3 (2026-06-06) — **PLUGIN DE CLAUDE CODE**
 
-- 🌳 **3 caminos** según tu objetivo: Local-only / Vercel managed / VPS Contabo comercial
-- 💰 **Budget tiers** explícitos en el camino VPS ($5 → $48/mes)
-- ⚠️ **Warning automático** si elegís Vercel pero vas a vender (avisa que escala caro)
-- 🐳 **Configs Docker generados** out-of-the-box para el camino VPS (docker-stack.yml, Traefik, backup scripts)
-- 🤖 **Auto-creación** del archivo de config de tu agente AI (CLAUDE.md / .cursorrules / .clinerules / etc.)
-- 📚 **4 docs nuevos** para path comercial: `infrastructure.md`, `disaster-recovery.md`, `monitoring.md`, `costs.md`
-- 🔌 **Plugins ecosystem**: el wizard recomienda los top plugins de Claude Code (Superpowers 219k⭐, Frontend Design oficial Anthropic, UI/UX Pro Max 87.8k⭐, claude-mem) y genera `install-plugins.sh` listo para correr
+- ✨ **NUEVO**: el harness ahora es un **plugin nativo de Claude Code** — usalo directamente en el chat sin abrir terminal
+- 🎯 **Slash commands**: `/harness-init` (wizard) + `/harness-upgrade` (migrar entre paths)
+- 💬 **Cero terminal para principiantes**: Claude te hace las preguntas EN EL CHAT y genera todo solo
+- 🌐 **Cross-agent**: funciona en Claude Code, Cursor, Cline, Antigravity, Continue.dev, Aider
+- 🐳 Todo lo de v2.1: 3 paths (Local/Vercel/VPS), 8-17 docs, Docker configs, plugin ecosystem
+
+---
 
 ---
 
@@ -107,110 +107,71 @@ Tiers de upgrade documentados (cuándo upgradear sólo cuando las métricas lo j
 
 ---
 
-## 📋 Antes de empezar — qué necesitás instalado
+## 🚀 Cómo instalar y usar — 3 opciones (la 1 es la más fácil)
 
-Tres herramientas básicas. Si no las tenés, instalalas (1 vez en tu vida):
+### ⭐ Opción 1 — Plugin de Claude Code (RECOMENDADO para principiantes — SIN terminal)
 
-### 1. Git — para clonar y guardar versiones del código
+**Pre-requisito**: tener [Claude Code](https://claude.com/download) instalado (CLI, VS Code extension o app Desktop).
 
-**¿Tengo Git?** Abrí una terminal (en Windows usá **Git Bash** o **PowerShell**, en Mac/Linux usá **Terminal**) y escribí:
+**Paso 1** — En el chat de Claude Code, pegá estos 3 comandos:
+```
+/plugin marketplace add Riccrack/ai-agent-harness-template
+/plugin install harness@ai-agent-harness-template
+/reload-plugins
+```
+
+**Paso 2** — En el chat de Claude Code, escribí:
+```
+/harness-init
+```
+
+**Paso 3** — Claude te va a hacer 18 preguntas conversacionales en el chat. Respondé en lenguaje natural. Al final genera todo automáticamente.
+
+¡Eso es todo! Sin terminal, sin npx, sin bash. Todo desde la interfaz del chat.
+
+> 💡 **Modos disponibles**:
+> - `/harness-init` → estándar (18 preguntas, ~8 min)
+> - `/harness-init quick` → solo 5 esenciales (~2 min)
+> - `/harness-init deep` → 18 + edge cases (~20 min)
+> - `/harness-upgrade to=vps` → migrar de path después
+
+### 🌐 Para otros agentes (Cursor, Cline, Antigravity, Continue.dev)
+
+Ver [`plugins/harness/README.md`](./plugins/harness/README.md) sección "Cross-agent setup" — el plugin funciona en todos los agentes con un setup mínimo en cada uno.
+
+### 🛠️ Opción 2 — Wizard bash (para devs que prefieren terminal)
+
+Si preferís terminal:
+
 ```bash
+# Pre-requisitos: Git + Node.js
+node --version    # debe decir v18+
 git --version
-```
-Si te dice un número de versión (ej: `git version 2.42.0`) → ya lo tenés ✅
 
-**Si no lo tenés**: descargalo de https://git-scm.com/downloads → instalador siguiente-siguiente-listo.
-
-### 2. Node.js — para correr el comando `npx degit`
-
-**¿Tengo Node?** En la terminal:
-```bash
-node --version
-```
-Si te dice un número (ej: `v20.10.0`) → ya lo tenés ✅
-
-**Si no lo tenés**: descargalo de https://nodejs.org → bajá la versión **LTS** → instalador siguiente-siguiente-listo.
-
-### 3. Una terminal con Bash
-
-- **Mac/Linux**: ya viene incluida la app **Terminal**
-- **Windows**: cuando instalás Git (paso 1) viene **Git Bash** incluido. Buscá "Git Bash" en el menú de Inicio.
-
----
-
-## ⚡ Cómo instalar el template — 3 caminos (elegí UNO)
-
-### 🌟 Camino 1 — El más fácil (wizard interactivo, recomendado)
-
-Este camino te hace preguntas y arma todo solo.
-
-**Paso 1**: abrí una terminal en la carpeta donde querés tu proyecto. Por ejemplo, si querés crear un proyecto nuevo llamado `mi-app`:
-
-```bash
-mkdir mi-app
-cd mi-app
-```
-
-> 💬 ¿Qué hicimos? `mkdir mi-app` crea una carpeta nueva llamada `mi-app`. `cd mi-app` entra a esa carpeta.
-
-**Paso 2**: descargá el template a una carpeta global en tu compu (solo se hace 1 vez en tu vida):
-
-```bash
+# Descargar wizard
 npx degit Riccrack/ai-agent-harness-template ~/.ai-harness
+
+# En la carpeta de tu proyecto
+bash ~/.ai-harness/init-harness.sh
 ```
 
-> 💬 ¿Qué hicimos? `npx degit` descarga este template sin guardar el historial de git (más rápido que `git clone`). Lo deja en `~/.ai-harness` (la `~` significa "tu carpeta de usuario": `/Users/tu-nombre` en Mac, `/home/tu-nombre` en Linux, `/c/Users/tu-nombre` en Windows Git Bash).
+El wizard bash es 100% funcional y mantenido — solo requiere comodidad con terminal.
 
-**Paso 3**: corré el wizard:
+### ✋ Opción 3 — Solo descargar los archivos (sin wizard)
 
 ```bash
-~/.ai-harness/init-harness.sh
+npx degit Riccrack/ai-agent-harness-template/harness-skeleton mi-app/docs
 ```
 
-> 💬 ¿Qué hicimos? Ejecutamos el script `init-harness.sh` que está en la carpeta global. Es un programa que te va a preguntar cosas.
-
-El wizard te pregunta:
-1. **Nombre del proyecto** → escribí lo que sea (ej: `MiApp`)
-2. **Owner / autor** → tu nombre o nick (auto-detecta de git si lo configuraste)
-3. **Idioma del contenido** → 1 (Español), 2 (English), 3 (Português)
-4. **Stack principal** → ¿qué tecnología vas a usar?
-   - 1) Node.js
-   - 2) Python
-   - 3) Ruby (Rails)
-   - 4) Go
-   - 5) Rust
-   - 6) PHP (Laravel)
-   - 7) Java / Kotlin (Spring)
-   - 8) Otro / Decido después
-5. **¿Inicializar git?** → `y` si querés que también haga `git init` automático, `n` si no
-
-Listo. Tu carpeta `mi-app/` ahora tiene una subcarpeta `docs/` con 13 archivos llenos de contenido inicial específico para tu stack.
-
-### 🛠️ Camino 2 — Solo descargar los archivos (sin wizard)
-
-Si no querés el wizard y solo querés los 13 archivos vacíos:
-
-```bash
-cd mi-app
-npx degit Riccrack/ai-agent-harness-template/harness-skeleton docs
-```
-
-> 💬 Esto deja los 13 archivos en `mi-app/docs/` con placeholders `{{PROJECT_NAME}}`, `{{YYYY-MM-DD}}`, `{{OWNER}}` que tenés que reemplazar a mano (o con buscar-y-reemplazar de tu editor).
-
-### 🖱️ Camino 3 — Sin terminal, usando GitHub web
-
-Si te marea la terminal:
-
-1. Andá a https://github.com/Riccrack/ai-agent-harness-template
-2. Click en el **botón verde "Use this template"** (arriba a la derecha)
-3. Click en **"Create a new repository"**
-4. Elegí un nombre, marcalo público o privado
-5. Click "Create"
-6. Listo — tenés un repo nuevo idéntico al template en tu cuenta. Clonalo a tu compu con `git clone <url-de-tu-repo-nuevo>` o descargalo como ZIP.
+Eso te deja los 13 archivos `.md` base en `mi-app/docs/` con placeholders `{{PROJECT_NAME}}`, `{{YYYY-MM-DD}}`, `{{OWNER}}` para que reemplaces a mano.
 
 ---
 
-## 🤖 Configurar tu agente de IA para que use los docs
+## 🤖 Configurar tu agente AI manualmente (solo si usaste Opción 2 o 3)
+
+> 💡 Si usaste **Opción 1 (plugin)**, este paso es **automático** — el wizard ya creó el archivo de config de tu agente.
+
+**Solo si bajaste el template a mano** (Opción 2 o 3), tenés que decirle a tu agente que **lea los docs al iniciar cada sesión**:
 
 **Esto es lo más importante**: con el template instalado, ahora tenés que decirle a tu agente que **lea los docs al iniciar cada sesión**. Cada herramienta tiene una manera diferente.
 
